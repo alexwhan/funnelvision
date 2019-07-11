@@ -6,7 +6,7 @@ Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -15,6 +15,6 @@ Imports:
     dplyr,
     tidyr,
     rlang,
-    zeallot
+    ggplot2
 Suggests: 
     testthat (>= 2.1.0)
