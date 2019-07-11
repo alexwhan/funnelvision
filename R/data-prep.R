@@ -1,7 +1,8 @@
+#' @importFrom rlang .data
+rlang::.data
+
 
 #' Prepare data for pedigree burst
-#' @importFrom rlang .data
-#' @importFrom zeallot %<-%
 #'
 #' @param funnels A data.frame
 #'
@@ -10,13 +11,11 @@
 data_prep <- function(funnels) {
   if(!inherits(funnels, "data.frame")) stop(paste(funnels, "is not a data.frame"))
 
-  if(colnames(funnels) != c("fff", "mff", "fmf", "mmf", "ffm", "mfm", "fmm", "mmm")) {
+  if(!all(colnames(funnels) %in% c("fff", "mff", "fmf", "mmf", "ffm", "mfm", "fmm", "mmm"))) {
     stop('The funnels dataframe must have columns names in the form: "fff", "mff", "fmf" "mmf", "ffm", "mfm", "fmm", "mmm"')
   }
 
-  if(!all(lapply(funnels, inherits, "numeric"))) stop("There are non-numeric columns in the input data.frame")
-
-  c(fff, mff, fmf, mmf, ffm, mfm, fmm, mmm, xmin, xmax, funnel, level, id, level_num, ymin, ymax, .data, id_lag, set) %<-% NULL
+  if(!all(unlist(lapply(funnels, is.numeric)))) stop("There are non-numeric columns in the input data.frame")
 
   #We need to have the rows sorted from the most maternal contribution to least, because that is how the geometry gets determined
   funnels_sort <- dplyr::arrange(funnels, fff, mff, fmf, mmf, ffm, mfm, fmm, mmm)
@@ -29,9 +28,9 @@ data_prep <- function(funnels) {
                              funnel = paste0(fff, mff, fmf, mmf, ffm, mfm, fmm, mmm))
 
   # This chunk calculates the outer ring. These are the founders that are on the paternal side for the final cross (hence "m$")
-  funnels_outer_raw <- dlpyr::select(funnels_sort, dplyr::matches("m$"), xmin, xmax, funnel)
+  funnels_outer_raw <- dplyr::select(funnels_n, dplyr::matches("m$"), xmin, xmax, funnel)
 
-  funnels_outer_long <- tidyr::gather(funnels_outer, level, id, -xmin, -xmax, -funnel)
+  funnels_outer_long <- tidyr::gather(funnels_outer_raw, level, id, -xmin, -xmax, -funnel)
 
   # getting the y (distance from centre)
   funnels_outer_y <- dplyr::mutate(funnels_outer_long,
@@ -47,7 +46,7 @@ data_prep <- function(funnels) {
   # calculate the middle ring
 
   # because we collapse rils into segments for this ring, we need to know the min and the max for each funnel at the middle stage
-  funnels_middle_raw <- dplyr::select(funnels_sort, fff, mff, fmf, mmf, xmin, xmax, funnel)
+  funnels_middle_raw <- dplyr::select(funnels_n, fff, mff, fmf, mmf, xmin, xmax, funnel)
 
   funnels_middle_group <- dplyr::group_by(funnels_middle_raw, fff, mff, fmf, mmf)
 
@@ -57,7 +56,7 @@ data_prep <- function(funnels) {
                                          funnel = funnel[1])
   funnels_middle_clean <- dplyr::select(dplyr::ungroup(funnels_middle_sum), fmf, mmf, xmin, xmax, funnel)
 
-  funnels_middle_long <- dplyr::gather(funnels_middle_clean, level, id, -xmin, -xmax, -funnel)
+  funnels_middle_long <- tidyr::gather(funnels_middle_clean, level, id, -xmin, -xmax, -funnel)
 
   funnels_middle_m <- dplyr::mutate(funnels_middle_long,
                                   level = factor(level, levels = c("fmf", "mmf")),
@@ -71,7 +70,7 @@ data_prep <- function(funnels) {
 
   #calculate the central paternal ring
 
-  funnels_cp_raw <- dplyr::select(funnels_sort, fff, mff, xmin, xmax, funnel)
+  funnels_cp_raw <- dplyr::select(funnels_n, fff, mff, xmin, xmax, funnel)
 
   funnels_cp_g <- dplyr::group_by(funnels_cp_raw, fff, mff)
 
@@ -87,7 +86,7 @@ data_prep <- function(funnels) {
                               id = id)
 
   #central maternal ring
-  funnels_cm_raw <- dplyr::select(funnels_sort, fff, xmin, xmax, funnel)
+  funnels_cm_raw <- dplyr::select(funnels_n, fff, xmin, xmax, funnel)
 
   funnels_cm_g <- dplyr::group_by(funnels_cm_raw, fff)
 
