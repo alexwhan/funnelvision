@@ -33,15 +33,15 @@ pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, r
   }
 
   p <- ggplot2::ggplot(layout, aes(xmin = xmin, xmax = xmax,
-                                ymin = ymin, ymax = ymax + 0.01)) +
+                                   ymin = ymin, ymax = ymax + 0.01)) +
     ggplot2::geom_rect(aes(fill = as.factor(id))) +
     ggplot2::scale_fill_brewer(name = "Founders", palette = "Dark2") +
     ggplot2::ylim(c(-0.5, 4.4)) +
     ggplot2::coord_polar() +
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.text = element_blank(),
-          axis.title = element_blank(),
-          panel.grid = element_blank())
+                   axis.title = element_blank(),
+                   panel.grid = element_blank())
 
   if(print_founders) {
     p <- p +
