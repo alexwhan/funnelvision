@@ -7,11 +7,14 @@ ggplot2::aes
 #' @param print_founders Logical. Should founder names be printed in the figure?
 #' @param show_legend Logical. Should a legend be printed?
 #' @param rotate_labels = TRUE
+#' @param xmax numeric. Controls limits if a subset of funnels are used
+#' @param colour_by_founder Logical. Default TRUE. If FALSE a grey figure is returned
+#' @param padding numeric. Controls spacing between crossing levels
 #'
 #' @return a ggplot2 object
 #' @export
 #'
-pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE) {
+pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1) {
   layout <- data_prep(funnels)
 
   fff <- dplyr::filter(layout, ymax == min(ymax))
@@ -33,10 +36,16 @@ pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, r
   }
 
   p <- ggplot2::ggplot(layout, aes(xmin = xmin, xmax = xmax,
-                                   ymin = ymin, ymax = ymax + 0.01)) +
-    ggplot2::geom_rect(aes(fill = as.factor(id))) +
-    ggplot2::scale_fill_brewer(name = "Founders", palette = "Dark2") +
-    ggplot2::ylim(c(-1.5, max(layout$ymax) * 1.1)) +
+                                   ymin = ymin, ymax = ymax + 0.01))
+
+  if(!colour_by_founder) {
+    p <- p + ggplot2::geom_rect(fill = "grey", colour = "darkgrey")
+  } else {
+    p <- p + ggplot2::geom_rect(aes(fill = as.factor(id))) +
+      ggplot2::scale_fill_brewer(name = "Founders", palette = "Dark2")
+  }
+
+  p <- p + ggplot2::ylim(c(-1.5, max(layout$ymax) * 1.1)) +
     ggplot2::coord_polar() +
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.text = element_blank(),
