@@ -132,6 +132,7 @@ data_prep <- function(funnels, padding = 0.1) {
   all_layout_out <- dplyr::mutate(all_layout_ord,
                                   level = dplyr::group_indices())
 
-  return(all_layout_out)
+
+  return(dplyr::ungroup(all_layout_out))
 
 }
