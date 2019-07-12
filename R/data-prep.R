@@ -5,10 +5,11 @@ rlang::.data
 #' Prepare data for pedigree burst
 #'
 #' @param funnels A data.frame
+#' @param padding Numeric. How much space between crosses. Default 0.1
 #'
 #' @return A data.frame
 #'
-data_prep <- function(funnels) {
+data_prep <- function(funnels, padding = 0.1) {
   if(!inherits(funnels, "data.frame")) stop(paste(funnels, "is not a data.frame"))
 
   if(!all(colnames(funnels) %in% c("fff", "mff", "fmf", "mmf", "ffm", "mfm", "fmm", "mmm"))) {
@@ -36,10 +37,8 @@ data_prep <- function(funnels) {
   funnels_outer_y <- dplyr::mutate(funnels_outer_long,
                                    level = factor(level, levels = c("ffm", "mfm", "fmm", "mmm")),
                                    level_num = as.numeric(level),
-                                   ymin = level_num / 4 + 3.05,
-                                   ymax = dplyr::case_when(
-                                     level_num < 4 ~ level_num / 4 + 3.35,
-                                     level_num == 4 ~ level_num / 4 + 3.3))
+                                   ymin = level_num + 3 + 3 * padding,
+                                   ymax = level_num + 4.1 + 3 * padding)
 
   funnels_outer <- dplyr::select(funnels_outer_y, id, xmin, xmax, ymin, ymax, funnel, level_num)
 
@@ -61,10 +60,8 @@ data_prep <- function(funnels) {
   funnels_middle_m <- dplyr::mutate(funnels_middle_long,
                                   level = factor(level, levels = c("fmf", "mmf")),
                                   level_num = as.numeric(level),
-                                  ymin = level_num / 2 + 1.7,
-                                  ymax = dplyr::case_when(
-                                    level_num == 2 ~ level_num / 2 + 2.2,
-                                    level_num == 1 ~ level_num / 2 +2.25))
+                                  ymin = level_num + 1 + padding,
+                                  ymax = level_num + 2.1 + padding)
 
   funnels_middle <- dplyr::select(funnels_middle_m, id, xmin, xmax, ymin, ymax, funnel)
 
@@ -81,8 +78,8 @@ data_prep <- function(funnels) {
   funnels_cp_select <- dplyr::select(funnels_cp_sum, id = mff, xmin, xmax, funnel)
 
   funnels_cp <- dplyr::mutate(funnels_cp_select,
-                              ymin = 1.1,
-                              ymax = 2.1,
+                              ymin = 1,
+                              ymax = 2,
                               id = id)
 
   #central maternal ring
@@ -103,7 +100,7 @@ data_prep <- function(funnels) {
 
   funnels_cm <- dplyr::mutate(funnels_cm_select,
                               ymin = 0,
-                              ymax = 1,
+                              ymax = 1.1,
                               id = id)
 
   all_layout <- dplyr::bind_rows(funnels_outer,
