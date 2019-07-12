@@ -124,6 +124,13 @@ data_prep <- function(funnels) {
                                      ymax = min(ymax),
                                      funnel = funnel[1])
 
-  return(all_layout_sum)
+  all_layout_g2 <- dplyr::group_by(all_layout_sum, ymax)
+
+  all_layout_ord <- dplyr::arrange(all_layout_g2, ymax)
+
+  all_layout_out <- dplyr::mutate(all_layout_ord,
+                                  level = dplyr::group_indices())
+
+  return(all_layout_out)
 
 }
