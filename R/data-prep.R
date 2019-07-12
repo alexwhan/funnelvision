@@ -37,8 +37,12 @@ data_prep <- function(funnels, padding = 0.1) {
   funnels_outer_y <- dplyr::mutate(funnels_outer_long,
                                    level = factor(level, levels = c("ffm", "mfm", "fmm", "mmm")),
                                    level_num = as.numeric(level),
-                                   ymin = level_num + 3 + 3 * padding,
-                                   ymax = level_num + 4.1 + 3 * padding)
+                                   ymin = case_when(
+                                     level_num < 3 ~ level_num + 3 + 5 * padding,
+                                     TRUE ~ level_num + 3 + 6 * padding),
+                                   ymax = case_when(
+                                     level_num < 3 ~ level_num + 4.1 + 4 * padding,
+                                     TRUE ~ level_num + 4.1 + 5 * padding))
 
   funnels_outer <- dplyr::select(funnels_outer_y, id, xmin, xmax, ymin, ymax, funnel, level_num)
 
