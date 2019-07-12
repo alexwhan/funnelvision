@@ -2,6 +2,7 @@
 
 export(animate_funnel)
 export(pedigreeburst)
+importFrom(dplyr,case_when)
 importFrom(dplyr,mutate)
 importFrom(ggplot2,aes)
 importFrom(rlang,.data)
