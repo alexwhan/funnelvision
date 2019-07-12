@@ -1,4 +1,16 @@
+#' Animate a funnel in a pedigreeburst
+#'
+#' @param funnels A data.frame
+#' @param funnel A string describing the funnel of interest
+#' @param show_base Logical. Should the base pedigree be shown?
+#'
+#' @return
+#' @export
+#'
+#' @examples
+animate_funnel <- function(funnels, funnel, show_base = TRUE) {
 
+}
 funnel <- "12345678"
 funnel_sep <- unlist(strsplit(funnel, ""))
 #first cross
