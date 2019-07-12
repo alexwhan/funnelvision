@@ -15,7 +15,7 @@ ggplot2::aes
 #' @export
 #'
 animate_funnel <- function(funnels, funnel, show_base = TRUE, show_animation = FALSE) {
-  if(!requireNamespace(gganimate)) stop("The gganimate package is required for this function")
+  if(!require(gganimate)) stop("The gganimate package is required for this function")
 
   dat <- data_prep(funnels)
 
@@ -34,47 +34,43 @@ animate_funnel <- function(funnels, funnel, show_base = TRUE, show_animation = F
   animdat <- dplyr::bind_rows(
     mutate(dplyr::filter(dat,
                          cross1 == cross1_funnel[1] & level %in% 1:2),
-           state = 2),
+           state = 1),
     mutate(dplyr::filter(dat,
                          (cross1 == cross1_funnel[1] & level %in% 1:2) |
                            (cross1 == cross1_funnel[2] & level %in% 1:2)),
-           state = 3),
+           state = 2),
     mutate(dplyr::filter(dat,
                          cross2 == cross2_funnel & level %in% 1:4),
-           state = 4),
+           state = 3),
     mutate(dplyr::filter(dat,
                          (cross2 == cross2_funnel & level %in% 1:4) |
                            (cross1 == cross1_funnel[3] & level %in% 1:2)),
-           state = 6),
+           state = 4),
     mutate(dplyr::filter(dat,
                          (cross2 == cross2_funnel & level %in% 1:4) |
                            (cross1 == cross1_funnel[3] & level %in% 1:2)|
                            (cross1 == cross1_funnel[4] & level %in% 1:2)),
-           state = 8),
+           state = 5),
     mutate(dplyr::filter(dat,
                          (cross2 == cross2_funnel & level %in% 1:4) |
                            (cross2 == cross2_funnel[2] & level %in% 1:4)),
-           state = 9),
+           state = 6),
     mutate(dplyr::filter(dat,
                          funnel == select_funnel),
-           state = 10),
-    mutate(dat, state = 11)
+           state = 7),
+    mutate(dat, state = 8)
   )
 
-  animp <- ggplot2::ggplot(animdat, aes(xmin = xmin, xmax = xmax,
-                                        ymin = ymin, ymax = ymax + 0.01)) +
-    ggplot2::geom_rect(data = dat, fill = "grey", colour = "darkgrey") +
-    ggplot2::geom_rect(aes(fill = as.factor(id))) +
-    ggplot2::xlim(c(0, 8)) +
+
+  if(show_base) {
+    base <- pedigreeburst(funnels, print_founders = FALSE, colour_by_founder = FALSE)
+  }
+
+  animp <- base +
+    ggplot2::geom_rect(data = animdat,
+                       aes(fill = as.factor(id))) +
     ggplot2::labs(title = "State: {closest_state}") +
     ggplot2::scale_fill_brewer(name = "Founders", palette = "Dark2") +
-    ggplot2::ylim(c(-0.5, 4.4)) +
-    ggplot2::coord_polar() +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(axis.text = ggplot2::element_blank(),
-                   axis.title = ggplot2::element_blank(),
-                   panel.grid = ggplot2::element_blank()) +
-    ggplot2::theme(legend.position = "none") +
     gganimate::transition_states(state) +
     gganimate::enter_fade() +
     gganimate::exit_shrink() +

@@ -12,6 +12,5 @@ funnels_right <- data.frame(
 anim <- animate_funnel(funnels_right, "12345678")
 
 test_that("animate-funnel works", {
-  expect_silent(animate_funnel(funnels_right, "12345678"))
   expect_true(inherits(anim, "gganim"))
 })
