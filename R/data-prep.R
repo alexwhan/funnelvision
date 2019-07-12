@@ -1,6 +1,9 @@
 #' @importFrom rlang .data
 rlang::.data
 
+#' @importFrom dplyr case_when
+dplyr::case_when
+
 
 #' Prepare data for pedigree burst
 #'

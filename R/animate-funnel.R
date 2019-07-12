@@ -11,10 +11,9 @@ ggplot2::aes
 #' @param show_base Logical. Should the base pedigree be shown?
 #' @param show_animation Logical. Should the animation be shown?
 #'
-#' @return
+#' @return A gganim object
 #' @export
 #'
-#' @examples
 animate_funnel <- function(funnels, funnel, show_base = TRUE, show_animation = FALSE) {
   if(!require(gganimate)) stop("The gganimate package is required for this function")
 
