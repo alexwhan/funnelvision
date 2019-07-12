@@ -15,7 +15,7 @@ ggplot2::aes
 #' @export
 #'
 animate_funnel <- function(funnels, funnel, show_base = TRUE, show_animation = FALSE) {
-  if(!require(gganimate)) stop("The gganimate package is required for this function")
+  if(!requireNamespace(gganimate)) stop("The gganimate package is required for this function")
 
   dat <- data_prep(funnels)
 
