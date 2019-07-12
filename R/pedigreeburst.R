@@ -6,7 +6,7 @@ ggplot2::aes
 #' @param funnels A data.frame
 #' @param print_founders Logical. Should founder names be printed in the figure?
 #' @param show_legend Logical. Should a legend be printed?
-#' @param
+#' @param rotate_labels = TRUE
 #'
 #' @return a ggplot2 object
 #' @export
@@ -14,7 +14,7 @@ ggplot2::aes
 pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE) {
   layout <- data_prep(funnels)
 
-  fff <- dplyr::filter(layout, ymax == 1)
+  fff <- dplyr::filter(layout, ymax == min(ymax))
 
   founders <- dplyr::left_join(
     data.frame(id = 1:8,
@@ -36,7 +36,7 @@ pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, r
                                    ymin = ymin, ymax = ymax + 0.01)) +
     ggplot2::geom_rect(aes(fill = as.factor(id))) +
     ggplot2::scale_fill_brewer(name = "Founders", palette = "Dark2") +
-    ggplot2::ylim(c(-0.5, 4.4)) +
+    ggplot2::ylim(c(-1.5, max(layout$ymax) * 1.1)) +
     ggplot2::coord_polar() +
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.text = element_blank(),
