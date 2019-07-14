@@ -4,6 +4,7 @@ ggplot2::aes
 #' Pedigreeburst
 #'
 #' @param funnels A data.frame
+#' @param show_levels A numeric vector describing which levels to show in the figure. Must start at 1
 #' @param print_founders Logical. Should founder names be printed in the figure?
 #' @param show_legend Logical. Should a legend be printed?
 #' @param rotate_labels = TRUE
@@ -14,8 +15,19 @@ ggplot2::aes
 #' @return a ggplot2 object
 #' @export
 #'
-pedigreeburst <- function(funnels, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1) {
+pedigreeburst <- function(funnels, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1) {
+
+  if(!is.integer(show_levels)) stop("show_levels must be an integer vector")
+
+  if(min(show_levels) != 1) stop("show_levels must start at 1")
+
+  if(!is.logical(print_founders)) stop("print_founders must be logical")
+
   layout <- data_prep(funnels)
+
+  if(max(show_levels) > max(layout$level)) stop("show_levels has a higher maximum than are present in the data")
+
+  layout <- layout[layout$level <= max(show_levels),]
 
   fff <- dplyr::filter(layout, ymax == min(ymax))
 
