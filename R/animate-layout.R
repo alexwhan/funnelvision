@@ -14,6 +14,8 @@ animate_layout <- function(funnels, funnel) {
 
   dat <- data_prep(funnels)
 
+  if(!funnel %in% dat$funnel) stop(paste("Funnel", funnel, "is not in the funnels dataframe"))
+
   dat$cross1 <- gsub("(^.{2}).*", "\\1", dat$funnel)
 
   dat$cross2 <- gsub("(^.{4}).*", "\\1", dat$funnel)
