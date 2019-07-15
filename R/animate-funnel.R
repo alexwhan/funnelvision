@@ -13,19 +13,21 @@ animate_funnel <- function(funnels, funnel, states = 1:8, nframes = 100, show_ba
 
   animdat <- animdat[animdat$state %in% states,]
 
+  animdat$section <- ifelse(animdat$state < 8, 1, 2)
+
+  base <- ggplot()
+
   if(show_base) {
     base <- pedigreeburst(funnels, print_founders = FALSE, colour_by_founder = FALSE)
   }
 
   animp <- base +
     ggplot2::geom_rect(data = animdat,
-                       aes(fill = as.factor(id))) +
+                       aes(fill = as.factor(id), group = paste(id, section))) +
     ggplot2::labs(title = "State: {closest_state}") +
     ggplot2::scale_fill_brewer(name = "Founders", palette = "Dark2") +
     gganimate::transition_states(state) +
-    gganimate::enter_fade() +
-    gganimate::exit_shrink() +
-    gganimate::ease_aes()
+    enter_fade()
 
   if(show_animation) gganimate::animate(animp, rewind = FALSE, nframes = nframes)
 
