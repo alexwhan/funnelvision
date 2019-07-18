@@ -5,12 +5,16 @@ ggplot2::aes
 #'
 #' @param funnels A dataframe with funnels
 #' @param founder_names A character vector giving founder names in the same order as the funnels
+#' @param highlight_funnel A string of length eight defining a funnel to highlight.
 #' @param show_founder_id logical. Should the founder ids be shown?
 #' @param show_points logical. Should a point be shown for each individual?
 #'
 #' @return a ggplot2 object
 #' @export
-pedigree_graph <- function(funnels, founder_names = NULL, show_founder_id = TRUE, show_points = TRUE) {
+pedigree_graph <- function(funnels, founder_names = NULL, highlight_funnel = NULL, show_founder_id = TRUE, show_points = TRUE) {
+  if(!is.null(highlight_funnel)) {
+    if(!inherits(highlight_funnel, "character") || nchar(highlight_funnel) != 8) stop("highlight_funnel should be a string with eight characters")
+  }
   layout <- pedigree_graph_layout(funnels)
 
   founders <- layout[layout$gen == 1, c("parentid", "parentxpos", "parentgen")]
@@ -28,9 +32,23 @@ pedigree_graph <- function(funnels, founder_names = NULL, show_founder_id = TRUE
     p <- p + geom_point(data = points, aes(x = x, y = y))
   }
 
+  if(!is.null(highlight_funnel)) {
+    cross1 <- unlist(strsplit(gsub("(.{2})", "\\1 ", highlight_funnel), " "))
+    cross2 <- unlist(strsplit(gsub("(.{4})", "\\1 ", highlight_funnel), " "))
+
+    highlight <- layout[layout$id %in% c(cross1, cross2, highlight_funnel),]
+
+    p <- p +
+      ggplot2::geom_segment(data = layout,
+                            aes(x = xpos, y = gen, xend = parentxpos, yend = parentgen), colour = "grey") +
+      ggplot2::geom_segment(data = highlight,
+                            aes(x = xpos, y = gen, xend = parentxpos, yend = parentgen, colour = rel), size = 2)
+  } else {
+    p <- p +
+      ggplot2::geom_segment(data = layout,
+                            aes(x = xpos, y = gen, xend = parentxpos, yend = parentgen, colour = rel))
+  }
   p <- p +
-    ggplot2::geom_segment(data = layout,
-                          aes(x = xpos, y = gen, xend = parentxpos, yend = parentgen, colour = rel)) +
     scale_color_discrete(name = "Relationship", labels = c("Female parent", "Male parent")) +
     ggplot2::scale_y_reverse() +
     theme_void() +
