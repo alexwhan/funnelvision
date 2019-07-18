@@ -6,7 +6,7 @@ ggplot2::aes
 #' @param states numeric vector describing which states should be included in the animation
 #' @param show_base Logical. Should the base pedigree be shown?
 #' @param show_animation Logical. Should the animation be shown?
-
+#' @export
 animate_funnel <- function(funnels, funnel, states = 1:8, nframes = 100, show_base = TRUE, show_animation = FALSE) {
 
   animdat <- animate_layout(funnels, funnel)

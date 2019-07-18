@@ -37,19 +37,19 @@ animate_layout <- function(funnels, funnel) {
                            (cross1 == cross1_funnel[2] & level %in% 1:2)),
            state = 2),
     mutate(dplyr::filter(dat,
-                         cross2 == cross2_funnel & level %in% 1:4),
+                         cross2 %in% cross2_funnel & level %in% 1:4),
            state = 3),
     mutate(dplyr::filter(dat,
-                         (cross2 == cross2_funnel & level %in% 1:4) |
+                         (cross2 %in% cross2_funnel & level %in% 1:4) |
                            (cross1 == cross1_funnel[3] & level %in% 1:2)),
            state = 4),
     mutate(dplyr::filter(dat,
-                         (cross2 == cross2_funnel & level %in% 1:4) |
+                         (cross2 %in% cross2_funnel & level %in% 1:4) |
                            (cross1 == cross1_funnel[3] & level %in% 1:2)|
                            (cross1 == cross1_funnel[4] & level %in% 1:2)),
            state = 5),
     mutate(dplyr::filter(dat,
-                         (cross2 == cross2_funnel & level %in% 1:4) |
+                         (cross2 %in% cross2_funnel & level %in% 1:4) |
                            (cross2 == cross2_funnel[2] & level %in% 1:4)),
            state = 6),
     mutate(dplyr::filter(dat,
