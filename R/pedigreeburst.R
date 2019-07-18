@@ -15,7 +15,7 @@ ggplot2::aes
 #' @return a ggplot2 object
 #' @export
 #'
-pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1) {
+pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1, polar = TRUE) {
 
   if(!is.integer(show_levels)) stop("show_levels must be an integer vector")
 
@@ -23,7 +23,7 @@ pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_fou
 
   if(!is.logical(print_founders)) stop("print_founders must be logical")
 
-  layout <- data_prep(funnels, focus_level)
+  layout <- data_prep(funnels, focus_level, padding = padding)
 
   if(max(show_levels) > max(layout$level)) stop("show_levels has a higher maximum than are present in the data")
 
@@ -51,6 +51,8 @@ pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_fou
     founders$theta <- 0
   }
 
+  layout <- layout[order(layout$level),]
+
   p <- ggplot2::ggplot(layout, aes(xmin = xmin, xmax = xmax,
                                    ymin = ymin, ymax = ymax + 0.01))
 
@@ -62,12 +64,12 @@ pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_fou
   }
 
   p <- p + ggplot2::ylim(c(-1.5, max(layout$ymax) * 1.1)) +
-    ggplot2::coord_polar() +
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.text = ggplot2::element_blank(),
                    axis.title = ggplot2::element_blank(),
                    panel.grid = ggplot2::element_blank())
 
+  if(polar) p <- p + ggplot2::coord_polar() else  p <- p + ggplot2::scale_y_reverse()
   if(print_founders) {
     p <- p +
       ggplot2::geom_text(data = founders, aes(x = x, y = y, label = name, angle = -theta),
