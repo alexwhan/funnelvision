@@ -67,14 +67,14 @@ data_prep <- function(funnels, focus_level = 1, padding = 0.1) {
                   ymin = case_when(
                     type == "fff" ~ 0,
                     type == "ffm" ~ 1,
-                    type == "fmf" ~ 2.1,
-                    type == "fmm" ~ 3.1,
-                    type == "mff" ~ 4.5,
-                    type == "mfm" ~ 5.5,
-                    type == "mmf" ~ 6.6,
-                    type == "mmm" ~ 7.6
+                    type == "fmf" ~ 2 + padding,
+                    type == "fmm" ~ 3 + padding,
+                    type == "mff" ~ 4 + padding * 3,
+                    type == "mfm" ~ 5 + padding * 3,
+                    type == "mmf" ~ 6 + padding * 4,
+                    type == "mmm" ~ 7 + padding * 4
                   ),
-                  ymax = ymin + 1.1)
+                  ymax = ymin + 1.025)
   return(stupid)
 
 
