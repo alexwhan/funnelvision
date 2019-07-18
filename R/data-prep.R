@@ -56,6 +56,30 @@ data_prep <- function(funnels, focus_level = 1, padding = 0.1) {
                              sort_order = 1:dplyr::n(),
                              funnel = paste0(fff, ffm, fmf, fmm, mff, mfm, mmf, mmm))
 
+  stupid <- funnels_n %>%
+    tidyr::gather(type, id, -xmin, -xmax, -sort_order, -funnel) %>%
+    dplyr::arrange(type, xmin) %>%
+    mutate(set = cumsum(ifelse(dplyr::lag(.data$id, default = 0) == id, 0, 1))) %>%
+    dplyr::group_by(id, set, type) %>%
+    dplyr::summarise(xmin = min(xmin),
+              xmax = max(xmax)) %>%
+    dplyr::mutate(level = as.numeric(factor(type, levels = c("fff", "ffm", "fmf", "fmm", "mff", "mfm", "mmf", "mmm"), ordered = TRUE)),
+                  ymin = case_when(
+                    type == "fff" ~ 0,
+                    type == "ffm" ~ 1,
+                    type == "fmf" ~ 2.1,
+                    type == "fmm" ~ 3.1,
+                    type == "mff" ~ 4.5,
+                    type == "mfm" ~ 5.5,
+                    type == "mmf" ~ 6.6,
+                    type == "mmm" ~ 7.6
+                  ),
+                  ymax = ymin + 1.1)
+  return(stupid)
+
+
+
+
   # This chunk calculates the outer ring. These are the founders that are on the paternal side for the final cross (hence "^m")
   funnels_outer_raw <- dplyr::select(funnels_n, dplyr::matches("^m"), xmin, xmax, funnel)
 
@@ -99,15 +123,19 @@ data_prep <- function(funnels, focus_level = 1, padding = 0.1) {
 
   #calculate the central paternal ring
 
-  funnels_cp_raw <- dplyr::select(funnels_n, fff, ffm, xmin, xmax, funnel)
+  funnels_cp_raw <- dplyr::select(funnels_n, ffm, xmin, xmax, funnel)
 
-  funnels_cp_g <- dplyr::group_by(funnels_cp_raw, fff, ffm)
+  funnels_cp_m <- dplyr::mutate(funnels_cp_raw,
+                                set = cumsum(ifelse(dplyr::lag(.data$ffm, default = 0) == ffm, 0, 1)))
+
+  funnels_cp_g <- dplyr::group_by(funnels_cp_m, set)
 
   funnels_cp_sum <- dplyr::ungroup(dplyr::summarise(funnels_cp_g,
                                                     xmin = min(xmin),
                                                     xmax = max(xmax),
-                                                    funnel = funnel[1]))
-  funnels_cp_select <- dplyr::select(funnels_cp_sum, id = ffm, xmin, xmax, funnel)
+                                                    funnel = funnel[1],
+                                                    id = ffm[1]))
+  funnels_cp_select <- dplyr::select(funnels_cp_sum, id, xmin, xmax, funnel)
 
   funnels_cp <- dplyr::mutate(funnels_cp_select,
                               ymin = 1,
@@ -117,15 +145,18 @@ data_prep <- function(funnels, focus_level = 1, padding = 0.1) {
   #central maternal ring
   funnels_cm_raw <- dplyr::select(funnels_n, fff, xmin, xmax, funnel)
 
-  funnels_cm_g <- dplyr::group_by(funnels_cm_raw, fff)
+  funnels_cm_m <- dplyr::mutate(funnels_cm_raw,
+                                set = cumsum(ifelse(dplyr::lag(.data$fff, default = 0) == fff, 0, 1)))
+  funnels_cm_g <- dplyr::group_by(funnels_cm_m, set)
 
   funnels_cm_sum <- dplyr::ungroup(dplyr::summarise(funnels_cm_g,
                                                     xmin = min(xmin),
                                                     xmax = max(xmax),
-                                                    funnel = funnel[1]))
+                                                    funnel = funnel[1],
+                                                    id = fff[1]))
 
   funnels_cm_select <- dplyr::select(funnels_cm_sum,
-                                     id = fff,
+                                     id,
                                      xmin,
                                      xmax,
                                      funnel)
