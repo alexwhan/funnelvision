@@ -5,5 +5,5 @@ test_that("wrong funnel is detected", {
 })
 
 test_that("animate_layout returns correctly", {
-  expect_equal(nrow(animate_layout(funnels_right, "12345678")), 104)
+  expect_equal(nrow(animate_layout(funnels_right, "12345678")), 126)
 })
