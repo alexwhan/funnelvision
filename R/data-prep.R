@@ -22,23 +22,23 @@ data_prep <- function(funnels, padding = 0.1) {
   if(!all(unlist(lapply(funnels, is.numeric)))) stop("There are non-numeric columns in the input data.frame")
 
   #We need to have the rows sorted from the most maternal contribution to least, because that is how the geometry gets determined
-  funnels_sort <- dplyr::arrange(funnels, fff, mff, fmf, mmf, ffm, mfm, fmm, mmm)
+  funnels_sort <- dplyr::arrange(funnels, fff, ffm, fmf, fmm, mff, mfm, mmf, mmm)
 
   #This calculates a min and max position for each RIL. So this will ensure every RIL has equal spacing in the outer ring,
   # and will allow the inner rings to be (progressively) determined
   funnels_n <- dplyr::mutate(funnels_sort, xmin = 0:(dplyr::n() - 1),
                              xmax = 1:dplyr::n(),
                              sort_order = 1:dplyr::n(),
-                             funnel = paste0(fff, mff, fmf, mmf, ffm, mfm, fmm, mmm))
+                             funnel = paste0(ffm, fmf, fmm, mff, mfm, mmf, mmm))
 
-  # This chunk calculates the outer ring. These are the founders that are on the paternal side for the final cross (hence "m$")
-  funnels_outer_raw <- dplyr::select(funnels_n, dplyr::matches("m$"), xmin, xmax, funnel)
+  # This chunk calculates the outer ring. These are the founders that are on the paternal side for the final cross (hence "^m")
+  funnels_outer_raw <- dplyr::select(funnels_n, dplyr::matches("^m"), xmin, xmax, funnel)
 
   funnels_outer_long <- tidyr::gather(funnels_outer_raw, level, id, -xmin, -xmax, -funnel)
 
   # getting the y (distance from centre)
   funnels_outer_y <- dplyr::mutate(funnels_outer_long,
-                                   level = factor(level, levels = c("ffm", "mfm", "fmm", "mmm")),
+                                   level = factor(level, levels = c("mff", "mfm", "mmf", "mmm")),
                                    level_num = as.numeric(level),
                                    ymin = case_when(
                                      level_num < 3 ~ level_num + 3 + 5 * padding,
@@ -52,20 +52,20 @@ data_prep <- function(funnels, padding = 0.1) {
   # calculate the middle ring
 
   # because we collapse rils into segments for this ring, we need to know the min and the max for each funnel at the middle stage
-  funnels_middle_raw <- dplyr::select(funnels_n, fff, mff, fmf, mmf, xmin, xmax, funnel)
+  funnels_middle_raw <- dplyr::select(funnels_n, fff, ffm, fmf, fmm, xmin, xmax, funnel)
 
-  funnels_middle_group <- dplyr::group_by(funnels_middle_raw, fff, mff, fmf, mmf)
+  funnels_middle_group <- dplyr::group_by(funnels_middle_raw, fff, ffm, fmf, fmm)
 
   funnels_middle_sum <- dplyr::summarise(funnels_middle_group,
                                          xmin = min(xmin),
                                          xmax = max(xmax),
                                          funnel = funnel[1])
-  funnels_middle_clean <- dplyr::select(dplyr::ungroup(funnels_middle_sum), fmf, mmf, xmin, xmax, funnel)
+  funnels_middle_clean <- dplyr::select(dplyr::ungroup(funnels_middle_sum), fmf, fmm, xmin, xmax, funnel)
 
   funnels_middle_long <- tidyr::gather(funnels_middle_clean, level, id, -xmin, -xmax, -funnel)
 
   funnels_middle_m <- dplyr::mutate(funnels_middle_long,
-                                  level = factor(level, levels = c("fmf", "mmf")),
+                                  level = factor(level, levels = c("fmf", "fmm")),
                                   level_num = as.numeric(level),
                                   ymin = level_num + 1 + padding,
                                   ymax = level_num + 2.1 + padding)
@@ -74,15 +74,15 @@ data_prep <- function(funnels, padding = 0.1) {
 
   #calculate the central paternal ring
 
-  funnels_cp_raw <- dplyr::select(funnels_n, fff, mff, xmin, xmax, funnel)
+  funnels_cp_raw <- dplyr::select(funnels_n, fff, ffm, xmin, xmax, funnel)
 
-  funnels_cp_g <- dplyr::group_by(funnels_cp_raw, fff, mff)
+  funnels_cp_g <- dplyr::group_by(funnels_cp_raw, fff, ffm)
 
   funnels_cp_sum <- dplyr::ungroup(dplyr::summarise(funnels_cp_g,
                                                     xmin = min(xmin),
                                                     xmax = max(xmax),
                                                     funnel = funnel[1]))
-  funnels_cp_select <- dplyr::select(funnels_cp_sum, id = mff, xmin, xmax, funnel)
+  funnels_cp_select <- dplyr::select(funnels_cp_sum, id = ffm, xmin, xmax, funnel)
 
   funnels_cp <- dplyr::mutate(funnels_cp_select,
                               ymin = 1,

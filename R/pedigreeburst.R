@@ -29,7 +29,7 @@ pedigreeburst <- function(funnels, show_levels = 1:8, print_founders = TRUE, sho
 
   layout <- layout[layout$level <= max(show_levels),]
 
-  fff <- dplyr::filter(layout, ymax == min(ymax))
+  fff <- dplyr::filter(layout, level == min(level))
 
   founders <- dplyr::left_join(
     data.frame(id = 1:8,
@@ -60,9 +60,9 @@ pedigreeburst <- function(funnels, show_levels = 1:8, print_founders = TRUE, sho
   p <- p + ggplot2::ylim(c(-1.5, max(layout$ymax) * 1.1)) +
     ggplot2::coord_polar() +
     ggplot2::theme_minimal() +
-    ggplot2::theme(axis.text = element_blank(),
-                   axis.title = element_blank(),
-                   panel.grid = element_blank())
+    ggplot2::theme(axis.text = ggplot2::element_blank(),
+                   axis.title = ggplot2::element_blank(),
+                   panel.grid = ggplot2::element_blank())
 
   if(print_founders) {
     p <- p +
