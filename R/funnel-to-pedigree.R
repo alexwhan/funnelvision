@@ -45,5 +45,5 @@ funnel_to_pedigree <- function(funnels, include_zero = FALSE) {
                    rep(3, times = nrow(fdf))))
   )
 
-  return(ped)
+  return(unique(ped))
 }
