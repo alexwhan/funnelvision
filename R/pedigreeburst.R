@@ -15,7 +15,7 @@ ggplot2::aes
 #' @return a ggplot2 object
 #' @export
 #'
-pedigreeburst <- function(funnels, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1) {
+pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1) {
 
   if(!is.integer(show_levels)) stop("show_levels must be an integer vector")
 
@@ -23,22 +23,26 @@ pedigreeburst <- function(funnels, show_levels = 1:8, print_founders = TRUE, sho
 
   if(!is.logical(print_founders)) stop("print_founders must be logical")
 
-  layout <- data_prep(funnels)
+  layout <- data_prep(funnels, focus_level)
 
   if(max(show_levels) > max(layout$level)) stop("show_levels has a higher maximum than are present in the data")
 
   layout <- layout[layout$level <= max(show_levels),]
 
-  fff <- dplyr::filter(layout, level == min(level))
+  fff <- dplyr::filter(layout, level == focus_level)
+
 
   founders <- dplyr::left_join(
     data.frame(id = 1:8,
-               name = as.character(1:8),
-               y = 0.5),
+               name = as.character(1:8)),
     fff)
+  founders$y <- mean(c(founders$ymin, founders$ymax), na.rm = TRUE)
 
   founders <- founders[!is.na(founders$set),]
   founders$x <- (founders$xmin + founders$xmax) / 2
+
+  founders_g <- dplyr::group_by(founders, id)
+  founders <- dplyr::summarise(founders_g, x = mean(x), y = mean(y), name = name[1], xmax = max(xmax), xmin = min(xmin), ymin = min(ymin), ymax = max(ymax))
 
   if(rotate_labels) {
     founders$theta <- (360 * (founders$x / max(founders$xmax)) - 90)

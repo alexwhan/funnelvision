@@ -12,24 +12,49 @@ dplyr::case_when
 #'
 #' @return A data.frame
 #'
-data_prep <- function(funnels, padding = 0.1) {
+data_prep <- function(funnels, focus_level = 1, padding = 0.1) {
   if(!inherits(funnels, "data.frame")) stop(paste(funnels, "is not a data.frame"))
 
   if(!all(colnames(funnels) %in% c("fff", "mff", "fmf", "mmf", "ffm", "mfm", "fmm", "mmm"))) {
     stop('The funnels dataframe must have columns names in the form: "fff", "mff", "fmf" "mmf", "ffm", "mfm", "fmm", "mmm"')
   }
 
+  n <- focus_level
+  n2 <- ifelse(n %% 2 == 0, n - 1, n + 1)
+  n3 <- ifelse(n > 4,
+               ifelse(n > 6,
+                      (n - 1) %% 2 + 5,
+                      (n - 1) %% 2 + 7),
+               ifelse(n > 2,
+                      (n - 1) %% 2 + 1,
+                      (n - 1) %% 2 + 3))
+  n4 <- ifelse(n3 %% 2 == 0, n3 - 1, n3 + 1)
+  n5 <- (n + 3) %% 8 + 1
+  n6 <- ifelse(n5 %% 2 == 0, n5 - 1, n5 + 1)
+  n7 <- ifelse(n5 > 4,
+               ifelse(n5 > 6,
+                      (n5 - 1) %% 2 + 5,
+                      (n5 - 1) %% 2 + 7),
+               ifelse(n5 > 2,
+                      (n5 - 1) %% 2 + 1,
+                      (n5 - 1) %% 2 + 3))
+  n8 <- ifelse(n7 %% 2 == 0, n7 - 1, n7 + 1)
+
+  nvec <- c(n, n2, n3, n4, n5, n6, n7, n8)
+  if(!all(nvec[order(nvec)] == 1:8)) stop("Something went wrong with the layer ordering")
   if(!all(unlist(lapply(funnels, is.numeric)))) stop("There are non-numeric columns in the input data.frame")
 
-  #We need to have the rows sorted from the most maternal contribution to least, because that is how the geometry gets determined
-  funnels_sort <- dplyr::arrange(funnels, fff, ffm, fmf, fmm, mff, mfm, mmf, mmm)
+  fs <- funnels[, c("fff", "ffm", "fmf", "fmm", "mff", "mfm", "mmf", "mmm")]
+
+  #We need to have the rows sorted according to the focus level, because that is how the geometry gets determined
+  funnels_sort <- fs[order(fs[[n]], fs[[n2]], fs[[n3]], fs[[n4]], fs[[n5]], fs[[n6]], fs[[n7]], fs[[n8]]),]
 
   #This calculates a min and max position for each RIL. So this will ensure every RIL has equal spacing in the outer ring,
   # and will allow the inner rings to be (progressively) determined
   funnels_n <- dplyr::mutate(funnels_sort, xmin = 0:(dplyr::n() - 1),
                              xmax = 1:dplyr::n(),
                              sort_order = 1:dplyr::n(),
-                             funnel = paste0(ffm, fmf, fmm, mff, mfm, mmf, mmm))
+                             funnel = paste0(fff, ffm, fmf, fmm, mff, mfm, mmf, mmm))
 
   # This chunk calculates the outer ring. These are the founders that are on the paternal side for the final cross (hence "^m")
   funnels_outer_raw <- dplyr::select(funnels_n, dplyr::matches("^m"), xmin, xmax, funnel)
@@ -118,7 +143,7 @@ data_prep <- function(funnels, padding = 0.1) {
 
   all_layout_m <- dplyr::mutate(all_layout,
                                   id_lag = dplyr::lag(.data$id, default = 0),
-                                  set = cumsum(ifelse(id == id_lag, 0, 1)))
+                                  set = cumsum(ifelse(xmax == dplyr::lag(.data$xmin, default = 0), 0, 1)))
 
   all_layout_g <- dplyr::group_by(all_layout_m, set, ymin, id)
 
