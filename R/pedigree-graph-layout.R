@@ -2,7 +2,7 @@
 #'
 #' @param funnels A data frame with funnels
 #'
-#' @return
+#' @return A dataframe
 #' @export
 #'
 pedigree_graph_layout <- function(funnels) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/animate-layout.R
 \name{animate_layout}
 \alias{animate_layout}
-\title{Animate a funnel in a pedigreeburst}
+\title{Animate a funnel in a funnelburst}
 \usage{
 animate_layout(funnels, funnel)
 }
@@ -15,5 +15,5 @@ animate_layout(funnels, funnel)
 A gganim object
 }
 \description{
-Animate a funnel in a pedigreeburst
+Animate a funnel in a funnelburst
 }

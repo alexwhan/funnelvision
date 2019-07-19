@@ -3,7 +3,7 @@
 #' @param funnels A dataframe describing funnels
 #' @param include_zero Logical. Whether to include the zero (non-crossing) generation
 #'
-#' @return
+#' @return A dataframe
 #' @export
 funnel_to_pedigree <- function(funnels, include_zero = FALSE) {
 

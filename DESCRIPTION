@@ -1,11 +1,11 @@
 Package: funnelvision
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     c(person("Alex", "Whan", email = "alexwhan@gmail.com",
              role = c("aut", "cre"), 
-             comment = c(ORCID = "0000-0002-6839-2915"))
+             comment = c(ORCID = "0000-0002-6839-2915")))
 Maintainer: Alex Whan <alexwhan@gmail.com>
 Description: Visualisation approaches for funnels in MAGIC populations
 License: GPL-3

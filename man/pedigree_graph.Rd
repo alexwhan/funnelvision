@@ -4,13 +4,15 @@
 \alias{pedigree_graph}
 \title{Make a pedigree graph}
 \usage{
-pedigree_graph(funnels, founder_names = NULL, show_founder_id = TRUE,
-  show_points = TRUE)
+pedigree_graph(funnels, founder_names = NULL, highlight_funnel = NULL,
+  show_founder_id = TRUE, show_points = TRUE)
 }
 \arguments{
 \item{funnels}{A dataframe with funnels}
 
 \item{founder_names}{A character vector giving founder names in the same order as the funnels}
+
+\item{highlight_funnel}{A string of length eight defining a funnel to highlight.}
 
 \item{show_founder_id}{logical. Should the founder ids be shown?}
 

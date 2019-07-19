@@ -11,6 +11,9 @@ funnel_to_pedigree(funnels, include_zero = FALSE)
 
 \item{include_zero}{Logical. Whether to include the zero (non-crossing) generation}
 }
+\value{
+A dataframe
+}
 \description{
 Funnel to pedigree
 }

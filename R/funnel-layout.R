@@ -11,7 +11,7 @@ dplyr::case_when
 #' @param padding Numeric. How much space between crosses. Default 0.1
 #'
 #' @return A data.frame
-#'
+#' @export
 funnel_layout <- function(funnels, focus_level = 1, padding = 0.1) {
   if(!inherits(funnels, "data.frame")) stop(paste(funnels, "is not a data.frame"))
 
