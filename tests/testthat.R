@@ -1,4 +1,4 @@
 library(testthat)
-library(pedigreeburst)
+library(funnelburst)
 
-test_check("pedigreeburst")
+test_check("funnelburst")
