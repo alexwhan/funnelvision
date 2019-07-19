@@ -23,7 +23,7 @@ funnelburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_found
 
   if(!is.logical(print_founders)) stop("print_founders must be logical")
 
-  layout <- data_prep(funnels, focus_level, padding = padding)
+  layout <- funnel_layout(funnels, focus_level, padding = padding)
 
   if(max(show_levels) > max(layout$level)) stop("show_levels has a higher maximum than are present in the data")
 

@@ -12,7 +12,7 @@ dplyr::case_when
 #'
 #' @return A data.frame
 #'
-data_prep <- function(funnels, focus_level = 1, padding = 0.1) {
+funnel_layout <- function(funnels, focus_level = 1, padding = 0.1) {
   if(!inherits(funnels, "data.frame")) stop(paste(funnels, "is not a data.frame"))
 
   if(!all(colnames(funnels) %in% c("fff", "mff", "fmf", "mmf", "ffm", "mfm", "fmm", "mmm"))) {

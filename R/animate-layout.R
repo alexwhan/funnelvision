@@ -12,7 +12,7 @@ dplyr::mutate
 animate_layout <- function(funnels, funnel) {
   if(!require(gganimate)) stop("The gganimate package is required for this function")
 
-  dat <- data_prep(funnels)
+  dat <- funnel_layout(funnels)
 
   if(!funnel %in% dat$funnel) stop(paste("Funnel", funnel, "is not in the funnels dataframe"))
 
