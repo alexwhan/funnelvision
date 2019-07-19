@@ -7,7 +7,6 @@ funnels_right <- data.frame(
   mfm = c(6, 5, 8, 7, 5, 4, 2, 1, 6, 6),
   mmf = c(7, 8, 5, 6, 1, 2, 3, 4, 7, 3),
   mmm = c(8, 7, 6, 5, 2, 1, 4, 3, 8, 5)
-
 )
 
 usethis::use_data(funnels_right, overwrite = TRUE)
