@@ -1,7 +1,7 @@
 #' @importFrom ggplot2 aes
 ggplot2::aes
 
-#' Pedigreeburst
+#' Funnelburst
 #'
 #' @param funnels A data.frame
 #' @param show_levels A numeric vector describing which levels to show in the figure. Must start at 1
@@ -15,7 +15,7 @@ ggplot2::aes
 #' @return a ggplot2 object
 #' @export
 #'
-pedigreeburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1, polar = TRUE) {
+funnelburst <- function(funnels, focus_level = 1, show_levels = 1:8, print_founders = TRUE, show_legend = FALSE, rotate_labels = TRUE, xmax = NULL, colour_by_founder = TRUE, padding = 0.1, polar = TRUE) {
 
   if(!is.integer(show_levels)) stop("show_levels must be an integer vector")
 

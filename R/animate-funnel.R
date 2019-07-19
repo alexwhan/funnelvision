@@ -18,7 +18,7 @@ animate_funnel <- function(funnels, funnel, states = 1:8, nframes = 100, show_ba
   base <- ggplot()
 
   if(show_base) {
-    base <- pedigreeburst(funnels, print_founders = FALSE, colour_by_founder = FALSE)
+    base <- funnelburst(funnels, print_founders = FALSE, colour_by_founder = FALSE)
   }
 
   animp <- base +

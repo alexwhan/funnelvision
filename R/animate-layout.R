@@ -1,7 +1,7 @@
 #' @importFrom dplyr mutate
 dplyr::mutate
 
-#' Animate a funnel in a pedigreeburst
+#' Animate a funnel in a funnelburst
 #'
 #' @param funnels A data.frame
 #' @param funnel A string describing the funnel of interest
