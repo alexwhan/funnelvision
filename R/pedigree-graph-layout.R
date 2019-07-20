@@ -1,24 +1,24 @@
 #' Pedigree graph layout
 #'
-#' @param funnels A data frame with funnels
+#' @param pedigree A pedigree dataframe with columns: f, m, id, gen
 #'
 #' @return A dataframe
 #' @export
 #'
-pedigree_graph_layout <- function(funnels) {
+pedigree_graph_layout <- function(pedigree) {
 
-  ped <- funnel_to_pedigree(funnels, include_zero = TRUE)
+  pedlg <- dplyr::group_by(dplyr::arrange(pedigree, gen, id), gen)
 
-  pedlg <- dplyr::group_by(dplyr::arrange(ped, gen, id), gen)
-
-  pedlm <- dplyr::mutate(pedlg, xpos = (dplyr::row_number() - 1) / (dplyr::n() - 1))
+  pedlm <- dplyr::mutate(pedlg, n = n(), xpos = (dplyr::row_number() - 1) / (dplyr::n() - 1))
+  pedlm$xpos[pedlm$n == 1] <- 0.5
+  pedlm <- pedlm[, c("f", "m", "id", "gen", "xpos")]
 
   pedlnz <- pedlm[pedlm$gen != 0,]
 
-  pedlg2 <- tidyr::gather(pedlnz, rel, parentid, f, m)
+  pedlg <- tidyr::gather(pedlnz, rel, parentid, f, m)
 
   pedlp <- dplyr::rename(pedlm, parentid = id, parentxpos = xpos, parentgen = gen)
-  pedlout <- dplyr::left_join(pedlg2, pedlp)
+  pedlout <- dplyr::left_join(pedlg, pedlp)
 
   return(pedlout)
 }
