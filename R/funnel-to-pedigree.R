@@ -35,7 +35,7 @@ funnel_to_pedigree <- function(funnels, include_zero = FALSE) {
   m3 <- paste0(fdf$ffm, fdf$mfm, fdf$fmm, fdf$mmm)
   id3 <- paste0(f3, m3)
 
-  ped <-  bind_rows(
+  ped <-  dplyr::bind_rows(
     tibble::tibble(f = c(f0, f1, f2, f3),
            m = c(m0, m1, m2, m3),
            id = c(id0, id1, id2, id3),
