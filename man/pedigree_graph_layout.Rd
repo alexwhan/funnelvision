@@ -4,10 +4,10 @@
 \alias{pedigree_graph_layout}
 \title{Pedigree graph layout}
 \usage{
-pedigree_graph_layout(funnels)
+pedigree_graph_layout(pedigree)
 }
 \arguments{
-\item{funnels}{A data frame with funnels}
+\item{pedigree}{A pedigree dataframe with columns: f, m, id, gen}
 }
 \value{
 A dataframe
